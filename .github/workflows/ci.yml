@@ -16,14 +16,26 @@ jobs:
           test -f bronze/ingest.ipynb
           test -f silver/transform.ipynb
           test -f gold/reporting.ipynb
-          
-      - name: List Databricks Repos
-        run: |
-          curl -X GET "${{ secrets.DATABRICKS_HOST }}/api/2.0/repos" \
-            -H "Authorization: Bearer ${{ secrets.DATABRICKS_TOKEN }}"
-          
-  trigger_job:
+
+  deploy:
     needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Databricks Repo
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          REPO_ID: ${{ secrets.REPO_ID }}
+        run: |
+          curl -X PATCH "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "branch": "main"
+            }'
+
+  trigger_job:
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Databricks Job
