@@ -52,7 +52,7 @@ jobs:
           databricks workspace import-dir ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze        
       
   trigger_job:
-    needs: deploy=
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Setup Databricks CLI
