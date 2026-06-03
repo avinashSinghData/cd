@@ -49,7 +49,9 @@ jobs:
             
       - name: Copy bronze to test
         run: |
-          databricks workspace import-dir ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze        
+          export PATH="$HOME/.databricks/bin:$PATH"
+          databricks workspace import-dir ./bronze /Users/singhavinash9fg@gmail.com/test/bronze        
+
       
   trigger_job:
     needs: deploy
