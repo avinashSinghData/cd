@@ -47,10 +47,10 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"branch": "main"}'
             
-      - name: Copy bronze to test
+      - name: Copy bronze to test in Databricks
         run: |
           export PATH="$HOME/.databricks/bin:$PATH"
-          databricks workspace import-dir ./bronze /Users/singhavinash9fg@gmail.com/test/bronze        
+          databricks workspace import-dir ./bronze /Repos/deployment/cd/test/bronze --overwrite        
 
       
   trigger_job:
