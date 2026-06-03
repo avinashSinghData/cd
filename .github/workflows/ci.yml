@@ -49,8 +49,8 @@ jobs:
             
       - name: Copy bronze to test
         run: |
-          databricks workspace import-dir ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze --overwrite
-
+          databricks fs cp -r ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze --overwrite
+    
   trigger_job:
     needs: deploy
     runs-on: ubuntu-latest
