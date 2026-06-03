@@ -38,10 +38,15 @@ jobs:
       
       - name: Update Databricks Repo
         env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           REPO_ID: ${{ secrets.REPO_ID }}
         run: |
-          databricks repos update --repo-id $REPO_ID --branch main
-
+          curl -X PATCH "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"branch": "main"}'
+            
       - name: Copy bronze to test
         run: |
           databricks workspace import-dir ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze --overwrite
