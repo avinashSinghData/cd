@@ -21,30 +21,50 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     steps:
-      - name: Update Databricks Repo
+      - uses: actions/checkout@v4
+      
+      - name: Setup Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      
+      - name: Configure Databricks CLI
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+      
+      - name: Update Databricks Repo
+        env:
           REPO_ID: ${{ secrets.REPO_ID }}
         run: |
-          curl -X PATCH "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "branch": "main"
-            }'
+          databricks repos update --repo-id $REPO_ID --branch main
+
+      - name: Copy bronze to test
+        run: |
+          databricks workspace import-dir ./bronze /Workspace/Users/singhavinash9fg@gmail.com/test/bronze --overwrite
 
   trigger_job:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Databricks Job
+      - name: Setup Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+      
+      - name: Configure Databricks CLI
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+      
+      - name: Trigger Databricks Job
+        env:
           DATABRICKS_JOB_ID: ${{ secrets.DATABRICKS_JOB_ID }}
         run: |
-          curl -X POST "$DATABRICKS_HOST/api/2.1/jobs/run-now" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"job_id\": $DATABRICKS_JOB_ID}"
+          databricks jobs run-now $DATABRICKS_JOB_ID
