@@ -45,12 +45,12 @@ jobs:
           curl -X PATCH "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
             -H "Authorization: Bearer $DATABRICKS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"branch": "UAT"}'
+            -d '{"branch": "main"}'
             
       - name: Copy bronze to test in Databricks
         run: |
           export PATH="$HOME/.databricks/bin:$PATH"
-          databricks workspace import-dir ./bronze /Repos/deployment/cd/test/bronze --overwrite        
+          databricks workspace import-dir ./bronze /Repos/deployment/cd/UAT/test/bronze --overwrite        
 
       
   trigger_job:
