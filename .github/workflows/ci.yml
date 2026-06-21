@@ -3,7 +3,7 @@ name: CI-CD Pipeline
 on:
   push:
     branches:
-      - main
+      - UAT
 
 jobs:
   validate:
@@ -45,7 +45,7 @@ jobs:
           curl -X PATCH "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
             -H "Authorization: Bearer $DATABRICKS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"branch": "main"}'
+            -d '{"branch": "UAT"}'
             
       - name: Copy bronze to test in Databricks
         run: |
