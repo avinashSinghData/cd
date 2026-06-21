@@ -47,11 +47,12 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{"branch": "uat"}'
             
-      - name: Copy bronze to test in Databricks
+      - name: Deploy to test folder in UAT branch
         run: |
           export PATH="$HOME/.databricks/bin:$PATH"
-          databricks workspace import-dir ./bronze /Repos/deployment/cd/test/bronze --overwrite        
-
+          databricks workspace import-dir ./bronze /Repos/deployment/cd/test/bronze --overwrite
+          databricks workspace import-dir ./silver /Repos/deployment/cd/test/silver --overwrite
+          databricks workspace import-dir ./gold /Repos/deployment/cd/test/gold --overwrite
       
   trigger_job:
     needs: deploy
